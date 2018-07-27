@@ -5,10 +5,29 @@ from django.shortcuts import render, get_object_or_404
 from .forms import PostForm
 from django.shortcuts import redirect
 from django.http import JsonResponse
+import json
+from django.views.decorators.csrf import csrf_exempt
+
+'''
+    elif choice == "선택 2":
+        return JsonResponse({"user_key": "user", "type": "text", "content": "학식메뉴"})
+    elif choice == "선택 3":
+        return JsonResponse({"user_key": "user", "type": "text", "content": ""})
+    keyboard()
+'''
+
+@csrf_exempt
+def message(request):
+    json_str = ((request.body).decode('utf-8'))
+    received_json_data = json.loads(json_str)
+    user = received_json_data['user_key']
+    choice = received_json_data['content']
+    if choice == "선택 1":
+        return JsonResponse({'message': {'text': '텍스트 출력 ~~~'},'keyboard': {'type': 'buttons','buttons': ["선택 1", "선택 2", "선택 3"]}})
 
 
 def keyboard(request):
-    return JsonResponse({"type" : "buttons",  "buttons" : ["선택 1", "선택 2", "선택 3"]})
+    return JsonResponse({"type": "buttons",  "buttons" : ["선택 1", "선택 2", "선택 3"]})
 
 def post_list(request):
     posts = Post.objects.filter(published_date__lte=timezone.now()).order_by('published_date')
